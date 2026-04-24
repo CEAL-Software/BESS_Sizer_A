@@ -1,0 +1,11 @@
+credentials:
+  usernames:
+    morris:
+      email: morris@example.com
+      name: Morris
+      password: "$2b$12$nG94Xc7tI1YLhHecDlZkk.kPDCS8jkHOxxqpd5//Ta.B.7HOShPK2"  # paste hash here
+
+cookie:
+  expiry_days: 30
+  key: mavuno_bess_secret_key
+  name: mavuno_bess_cookie

@@ -8,6 +8,35 @@ import anthropic
 import json
 import os
 
+# Login Start
+import yaml
+import streamlit_authenticator as stauth
+from yaml.loader import SafeLoader
+
+with open('config.yaml') as f:
+    config = yaml.load(f, Loader=SafeLoader)
+
+authenticator = stauth.Authenticate(
+    config['credentials'],
+    config['cookie']['name'],
+    config['cookie']['key'],
+    config['cookie']['expiry_days'],
+)
+
+authenticator.login(location='main')
+
+if st.session_state.get('authentication_status') is False:
+    st.error('Incorrect username or password')
+    st.stop()
+elif st.session_state.get('authentication_status') is None:
+    st.info('Please enter your credentials')
+    st.stop()
+
+# ── Everything below here only renders if logged in ──
+authenticator.logout(location='sidebar')
+
+# Login End
+
 # ── Page config ──────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="BESS Sizing Tool — Mavuno Foods",
@@ -110,12 +139,13 @@ with st.sidebar:
     tariff_escalation_pct = st.number_input("Annual Tariff Escalation (%)", value=6.0, step=0.5)
 
     st.markdown("---")
-    api_key = st.text_input("Anthropic API Key", type="password", help="Your key is never stored")
+    # api_key = st.text_input("Anthropic API Key", type="password", help="Your key is never stored")
+    api_key = st.secrets["ANTHROPIC_API_KEY"] 
 
 # ── Header ────────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="main-header">
-  <h1>⚡ BESS Sizing Tool</h1>
+  <h1>BESS Sizer A</h1>
   <p>Mavuno Foods Ltd · Nairobi Industrial Area · 200 kWp Solar + Battery Storage Analysis</p>
 </div>
 """, unsafe_allow_html=True)
