@@ -503,7 +503,7 @@ Return ONLY a JSON object with this exact structure:
       "capex_kes": <int>,
       "payback_years": <float>,
       "npv_kes": <int>,
-      "reasoning": "..."
+      "reasoning": "Return ONLY valid JSON. Do not include calculations, working notes, or the word 'Placeholder' anywhere in the output.The reasoning field must be a clean 2-3 sentence engineering summary only."
     }},
     {{ "name": "Recommended", ... }},
     {{ "name": "Aggressive", ... }}
@@ -537,7 +537,15 @@ Return ONLY a JSON object with this exact structure:
                         raw = raw.split("```")[1]
                         if raw.startswith("json"):
                             raw = raw[4:]
-                    st.session_state.bess_result = json.loads(raw)
+                    try:
+                        st.session_state.bess_result = json.loads(raw)
+                    except json.JSONDecodeError:
+                        # Attempt repair with json_repair if available
+                        try:
+                            import json_repair
+                            st.session_state.bess_result = json_repair.loads(raw)
+                        except Exception:
+                            raise
                     st.session_state.bess_error  = None
                 except json.JSONDecodeError as e:
                     st.session_state.bess_error = f"JSON parse error: {e}\n\nRaw response:\n{raw}"
